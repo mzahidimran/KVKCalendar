@@ -29,6 +29,11 @@ final class ScrollHeaderDayCell: UICollectionViewCell {
         return label
     }()
     
+    private lazy var selectionBackground: UIView = {
+        let label = UIView()
+        return label
+    }()
+    
     private var headerStyle = HeaderScrollStyle()
     
     var style = Style() {
@@ -58,27 +63,28 @@ final class ScrollHeaderDayCell: UICollectionViewCell {
     var selectDate: Date = Date() {
         didSet {
             let nowDate = Date()
-            guard nowDate.month != item.day.date?.month else {
-                // remove the selection if the current date (for the day) does not match the selected one
-                if selectDate.day != nowDate.day, item.day.date?.day == nowDate.day, item.day.date?.year == nowDate.year {
-                    dateLabel.textColor = item.style?.textColor ?? headerStyle.colorBackgroundCurrentDate
+            // remove the selection if the current date (for the day) does not match the selected one
+            if selectDate.day != nowDate.day, item.day.date?.day == nowDate.day, item.day.date?.year == nowDate.year {
+                dateLabel.textColor = item.style?.textColor ?? headerStyle.colorBackgroundCurrentDate
+                titleLabel.textColor = headerStyle.colorTitleDate
+                if headerStyle.selectionStyle == .title {
                     dateLabel.backgroundColor = item.style?.backgroundColor ?? .clear
                 }
-                // mark the selected date, which is not the same as the current one
-                if item.day.date?.month == selectDate.month, item.day.date?.day == selectDate.day, selectDate.day != nowDate.day {
-                    dateLabel.textColor = item.style?.textColor ?? headerStyle.colorSelectDate
+                else {
+                    selectionBackground.backgroundColor = item.style?.backgroundColor ?? .clear
+                }
+            }
+            // mark the selected date, which is not the same as the current one
+            if item.day.date?.month == selectDate.month, item.day.date?.day == selectDate.day, selectDate.day != nowDate.day {
+                dateLabel.textColor = item.style?.textColor ?? headerStyle.colorSelectDate
+                titleLabel.textColor = headerStyle.selectedColorTitleDate
+                if headerStyle.selectionStyle == .title {
                     dateLabel.backgroundColor = item.style?.dotBackgroundColor ?? headerStyle.colorBackgroundSelectDate
                 }
-                return
+                else {
+                    selectionBackground.backgroundColor = item.style?.dotBackgroundColor ?? headerStyle.colorBackgroundSelectDate
+                }
             }
-            
-            // select date not in the current month
-            guard item.day.date?.month == selectDate.month, item.day.date?.day == selectDate.day else {
-                populateCell(item)
-                return
-            }
-            dateLabel.textColor = item.style?.textColor ?? headerStyle.colorSelectDate
-            dateLabel.backgroundColor = item.style?.dotBackgroundColor ?? headerStyle.colorBackgroundSelectDate
         }
     }
     
@@ -87,21 +93,26 @@ final class ScrollHeaderDayCell: UICollectionViewCell {
         
         var titleFrame = frame
         titleFrame.origin.x = 0
-        titleFrame.origin.y = 0
+        titleFrame.origin.y = 15
         titleFrame.size.height = titleFrame.height > heightTitle ? heightTitle : titleFrame.height / 2 - 10
         titleLabel.frame = titleFrame
         
         var dateFrame = frame
         dateFrame.size.height = frame.height > heightDate ? heightDate : frame.height / 2
         dateFrame.size.width = heightDate
-        dateFrame.origin.y = titleFrame.height
+        dateFrame.origin.y = titleFrame.height + 15
         dateFrame.origin.x = (frame.width / 2) - (dateFrame.width / 2)
         dateLabel.frame = dateFrame
         
+        selectionBackground.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: heightDate + 10, height: self.bounds.height))
+        selectionBackground.center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+        
+        addSubview(selectionBackground)
         addSubview(titleLabel)
         addSubview(dateLabel)
         
         dateLabel.layer.cornerRadius = dateLabel.frame.width / 2
+        selectionBackground.layer.cornerRadius = selectionBackground.frame.width / 2
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -110,14 +121,14 @@ final class ScrollHeaderDayCell: UICollectionViewCell {
     
     private func populateCell(_ item: DayStyle) {
         guard item.day.type == .saturday || item.day.type == .sunday else {
-            populateDay(date: item.day.date, colorText: item.style?.textColor ?? headerStyle.colorDate, style: item.style)
             titleLabel.textColor = headerStyle.colorDate
+            populateDay(date: item.day.date, colorText: item.style?.textColor ?? headerStyle.colorDate, style: item.style)
             backgroundColor = item.style?.backgroundColor ?? headerStyle.colorWeekdayBackground
             return
         }
-        
-        populateDay(date: item.day.date, colorText: item.style?.textColor ?? headerStyle.colorWeekendDate, style: item.style)
         titleLabel.textColor = headerStyle.colorWeekendDate
+        populateDay(date: item.day.date, colorText: item.style?.textColor ?? headerStyle.colorWeekendDate, style: item.style)
+        
         backgroundColor = item.style?.backgroundColor ?? headerStyle.colorWeekendBackground
     }
     
@@ -125,10 +136,29 @@ final class ScrollHeaderDayCell: UICollectionViewCell {
         let nowDate = Date()
         if date?.month == nowDate.month, date?.day == nowDate.day, date?.year == nowDate.year {
             dateLabel.textColor = item.style?.textColor ?? headerStyle.colorCurrentDate
-            dateLabel.backgroundColor = style?.dotBackgroundColor ?? headerStyle.colorBackgroundCurrentDate
+            titleLabel.textColor = headerStyle.selectedColorTitleDate
+            if headerStyle.selectionStyle == .title {
+                dateLabel.backgroundColor = style?.dotBackgroundColor ?? headerStyle.colorBackgroundCurrentDate
+            }
+            else {
+                selectionBackground.backgroundColor = style?.dotBackgroundColor ?? headerStyle.colorBackgroundCurrentDate
+            }
+            
         } else {
             dateLabel.textColor = colorText
-            dateLabel.backgroundColor = style?.backgroundColor ?? .clear
+            if headerStyle.selectionStyle == .title {
+                dateLabel.backgroundColor = style?.backgroundColor ?? .clear
+            }
+            else {
+                selectionBackground.backgroundColor = style?.backgroundColor ?? .clear
+            }
+            
+            
+            guard item.day.type == .saturday || item.day.type == .sunday else {
+                titleLabel.textColor = headerStyle.colorDate
+                return
+            }
+            titleLabel.textColor = headerStyle.colorWeekendDate
         }
     }
 }

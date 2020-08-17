@@ -52,10 +52,17 @@ final class ScrollDayHeaderView: UIView {
         if !style.headerScroll.isHiddenTitleDate {
             collectionView.frame.size.height = frame.height - style.headerScroll.heightTitleDate
             titleLabel.frame = frame
+            if style.headerScroll.titlePosition == .top {
+                collectionView.frame.origin.y = style.headerScroll.heightTitleDate
+                titleLabel.frame.origin.y = 0
+            }
+            else {
+                titleLabel.frame.origin.y = collectionView.frame.size.height
+            }
+            
             titleLabel.frame.origin.x = 0
             titleLabel.frame.size.width -= frame.origin.x
-            titleLabel.frame.origin.y = collectionView.frame.size.height
-            titleLabel.frame.size.height -= (titleLabel.frame.origin.y + 5)
+            titleLabel.frame.size.height = style.headerScroll.heightTitleDate
             
             setDateToTitle(date)
             addSubview(titleLabel)
@@ -199,6 +206,13 @@ extension ScrollDayHeaderView: CalendarSettingProtocol {
         newView.frame.origin.x = 0
         if !style.headerScroll.isHiddenTitleDate {
             newView.frame.size.height = self.frame.height - style.headerScroll.heightTitleDate
+            if style.headerScroll.titlePosition == .top {
+                collectionView.frame.origin.y = style.headerScroll.heightTitleDate
+                titleLabel.frame.origin.y = 0
+            }
+            else {
+                titleLabel.frame.origin.y = collectionView.frame.size.height
+            }
         }
         addSubview(newView)
         
@@ -277,8 +291,8 @@ extension ScrollDayHeaderView: UICollectionViewDelegate, UICollectionViewDelegat
         
         guard let newMoveDate = days[indexPath.row].date else { return }
         
-        date = newMoveDate
-        didSelectDate?(newMoveDate, type)
+//        date = newMoveDate
+//        didSelectDate?(newMoveDate, type)
         setDateToTitle(newMoveDate)
         collectionView.reloadData()
         

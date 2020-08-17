@@ -29,9 +29,20 @@ public struct Style {
 }
 
 public struct HeaderScrollStyle {
+    
+    public enum TitlePosition {
+        case top
+        case bottom
+    }
+    
+    public enum SelectionBackground {
+        case title
+        case titleAndDay
+    }
+    
     private let formatFull: DateFormatter = {
         let format = DateFormatter()
-        format.dateStyle = .full
+        format.dateFormat = "MMM, yyyy"
         return format
     }()
     
@@ -43,24 +54,27 @@ public struct HeaderScrollStyle {
     }()
     
     public var titleDays: [String] = []
-    public var heightHeaderWeek: CGFloat = 70
-    public var heightTitleDate: CGFloat = 30
+    public var heightHeaderWeek: CGFloat = 85
+    public var heightTitleDate: CGFloat = 50
     
     @available(*, deprecated, renamed: "colorBackground")
-    public var backgroundColor: UIColor = gainsboro.withAlphaComponent(0.4)
-    public var colorBackground: UIColor = gainsboro.withAlphaComponent(0.4)
+    public var backgroundColor: UIColor = .white
+    public var colorBackground: UIColor = .white
     
     public var isHiddenTitleDate: Bool = false
+    public var titlePosition: TitlePosition = .top
+    public var selectionStyle: SelectionBackground = .titleAndDay
     public var isHiddenCornerTitleDate: Bool = true
     public lazy var formatterTitle: DateFormatter = formatFull
     public lazy var formatterCornerTitle: DateFormatter = formatSort
     public var colorTitleDate: UIColor = .black
+    public var selectedColorTitleDate: UIColor = .white
     public var colorTitleCornerDate: UIColor = .red
     public var colorDate: UIColor = .black
     public var colorNameDay: UIColor = .black
     public var colorCurrentDate: UIColor = .white
-    public var colorBackgroundCurrentDate: UIColor = .red
-    public var colorBackgroundSelectDate: UIColor = .black
+    public var colorBackgroundCurrentDate: UIColor = UIColor(named: "Orange")!
+    public var colorBackgroundSelectDate: UIColor = UIColor(named: "Orange")!
     public var colorSelectDate: UIColor = .white
     public var colorWeekendDate: UIColor = .gray
     public var isScrollEnabled: Bool = true
