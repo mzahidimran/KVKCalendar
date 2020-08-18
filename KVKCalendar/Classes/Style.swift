@@ -73,8 +73,8 @@ public struct HeaderScrollStyle {
     public var colorDate: UIColor = .black
     public var colorNameDay: UIColor = .black
     public var colorCurrentDate: UIColor = .white
-    public var colorBackgroundCurrentDate: UIColor = UIColor(named: "Orange")!
-    public var colorBackgroundSelectDate: UIColor = UIColor(named: "Orange")!
+    public var colorBackgroundCurrentDate: UIColor = UIColor(red: 255/255.0, green: 135/255.0, blue: 64/255.0, alpha: 1)
+    public var colorBackgroundSelectDate: UIColor = UIColor(red: 255/255.0, green: 135/255.0, blue: 64/255.0, alpha: 1)
     public var colorSelectDate: UIColor = .white
     public var colorWeekendDate: UIColor = .gray
     public var isScrollEnabled: Bool = true
